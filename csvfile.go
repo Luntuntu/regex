@@ -28,7 +28,7 @@ func main() {
 	defer writer.Flush()
 
 	// Write the header row to the CSV file
-	writer.Write([]string{"Incorrect", "Correct"})
+	writer.Write([]string{"proper_word", "misspelling"})
 
 	// Read the text file line by line
 	scanner := bufio.NewScanner(file)
@@ -39,8 +39,14 @@ func main() {
 		// Tokenize by splitting at the "->"
 		tokens := strings.Split(line, "->")
 		if len(tokens) == 2 {
-			// Trim spaces from both parts and write to the CSV file
-			writer.Write([]string{strings.TrimSpace(tokens[0]), strings.TrimSpace(tokens[1])})
+			// Trim spaces from the misspelled word (first token)
+			misspelledWord := strings.TrimSpace(tokens[0])
+
+			// Split corrections by commas and iterate over
+			corrections := strings.Split(tokens[1], ",")
+			for _, correction := range corrections {
+				writer.Write([]string{misspelledWord, strings.TrimSpace(correction)})
+			}
 		}
 	}
 
